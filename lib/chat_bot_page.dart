@@ -1,8 +1,7 @@
-import 'dart:io';
-
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:flutter/material.dart';
 import 'model/MessageModel.dart';
+import 'widgets/cards.dart';
 
 class ChatBotPage extends StatefulWidget {
   const ChatBotPage({super.key});
@@ -32,7 +31,7 @@ class _ChatBotPageState extends State<ChatBotPage> {
           leading: const Padding(
             padding: EdgeInsets.only(left: 10),
             child: CircleAvatar(
-              backgroundImage: AssetImage('Google_Icon.png'),
+              backgroundImage: AssetImage('assets/Google_Icon.png'),
             ),
           ),
         ),
@@ -44,8 +43,8 @@ class _ChatBotPageState extends State<ChatBotPage> {
                 child: ListView.builder(
                   itemCount: messages.length,
                   itemBuilder: (context, index) => messages[index].isBot
-                      ? botCard(index: index)
-                      : userCard(index: index),
+                      ? botCard(index, messages[index].message.trim())
+                      : userCard(index, messages[index].message.trim()),
                 ),
               ),
               Align(
@@ -87,11 +86,7 @@ class _ChatBotPageState extends State<ChatBotPage> {
                                 ),
                               )
                             : GestureDetector(
-                                onTap: () {
-                                  if (formKey.currentState!.validate()) {
-                                    sendMessage();
-                                  }
-                                },
+                                onTap: sendMessage,
                                 child: const Icon(Icons.send,
                                     size: kDefault * 1.6, color: Colors.blue),
                               ),
@@ -110,115 +105,34 @@ class _ChatBotPageState extends State<ChatBotPage> {
         ),
       );
 
-  Padding userCard({required int index}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: kDefault,
-        vertical: kDefault,
-      ),
-      child: Stack(
-        children: [
-          const Align(
-            alignment: Alignment.centerRight,
-            child: CircleAvatar(
-              child: Icon(Icons.person),
-            ),
-          ),
-          Align(
-            alignment: Alignment.centerRight,
-            child: Container(
-              margin: const EdgeInsets.only(
-                  left: kDefault / 2, right: kDefault * 3.6),
-              padding: const EdgeInsets.symmetric(
-                horizontal: kDefault / 1.1,
-                vertical: kDefault / 1.2,
-              ),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: const BorderRadius.only(
-                  bottomRight: Radius.circular(kDefault * 1.8),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(.12),
-                    offset: const Offset(.5, kDefault / 1.6),
-                    blurRadius: kDefault * 2,
-                  ),
-                ],
-              ),
-              child: Text(messages[index].message.trim()),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Padding botCard({required int index}) => Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: kDefault,
-          vertical: kDefault,
-        ),
-        child: Stack(
-          children: [
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: CircleAvatar(
-                backgroundImage: AssetImage('Google_Icon.png'),
-                radius: 18,
-              ),
-            ),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Container(
-                margin: const EdgeInsets.only(
-                    right: kDefault / 2, left: kDefault * 3.6),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: kDefault / 1.1,
-                  vertical: kDefault / 1.2,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(kDefault * 1.8),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(.12),
-                      offset: const Offset(kDefault / 1.2, kDefault / 2),
-                      blurRadius: kDefault * 2,
-                    ),
-                  ],
-                ),
-                child: Text(messages[index].message.trim()),
-              ),
-            ),
-          ],
-        ),
-      );
-
   void sendMessage() async {
-    messages.add(
-      MessageModel(false, messageController.text),
-    );
-    setState(() => isAiTyping = true);
-
-    // final model = GenerativeModel(model: 'gemini-pro', apiKey: apiKey);
-    final model = GenerativeModel(model: 'gemini-1.0-pro', apiKey: apiKey);
-    final content = [Content.text(messageController.text)];
-    final response = await model.generateContent(content);
-    debugPrint('response.text :${response.text}');
-
-    messageController.clear();
-    setState(() {
+    if (formKey.currentState!.validate()) {
       messages.add(
-        MessageModel(true, response.text!),
+        MessageModel(false, messageController.text),
       );
-      isAiTyping = false;
-      // for (MessageModel element in messages) {
-      //   debugPrint(element.toString());
-      //   debugPrint('element.message => ${element.message}');
-      // }
-    });
+      setState(() => isAiTyping = true);
+
+      // final model = GenerativeModel(model: 'gemini-pro', apiKey: apiKey);
+      final model = GenerativeModel(model: 'gemini-1.0-pro', apiKey: apiKey);
+      // final content = [Content.text(messageController.text)];
+      final response = await model.generateContent(
+        [
+          Content.text(messageController.text),
+        ],
+      );
+      debugPrint('response.text :${response.text}');
+
+      messageController.clear();
+      setState(() {
+        messages.add(
+          MessageModel(true, response.text!),
+        );
+        isAiTyping = false;
+        // for (MessageModel element in messages) {
+        //   debugPrint(element.toString());
+        //   debugPrint('element.message => ${element.message}');
+        // }
+      });
+    }
   }
 }
