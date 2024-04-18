@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../chat_bot_page.dart';
+import 'pages/chat_bot_page.dart';
 import 'theme.dart';
 
 void main() => runApp(const MyApp());

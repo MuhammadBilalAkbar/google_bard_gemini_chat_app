@@ -1,7 +1,7 @@
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:flutter/material.dart';
-import 'model/MessageModel.dart';
-import 'widgets/cards.dart';
+import '../model/MessageModel.dart';
+import '../widgets/cards.dart';
 
 class ChatBotPage extends StatefulWidget {
   const ChatBotPage({super.key});
