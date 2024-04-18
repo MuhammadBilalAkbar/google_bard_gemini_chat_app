@@ -10,7 +10,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Dart OpenAI',
+        title: 'Google Bard Gemini',
         theme: theme,
         home: const ChatBotPage(),
       );

@@ -27,7 +27,8 @@ class _ChatBotPageState extends State<ChatBotPage> {
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
-          title: const Text('ChatGPT in Flutter'),
+          title: const Text('Bard/Gemini in Flutter'),
+          centerTitle: true,
           leading: const Padding(
             padding: EdgeInsets.only(left: 10),
             child: CircleAvatar(
